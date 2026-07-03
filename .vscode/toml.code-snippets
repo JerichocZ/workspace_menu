@@ -1,0 +1,22 @@
+{
+    "New project" : {
+        "prefix": "newproject",
+        "body": [
+            "[projects.${1:your project name}]",
+            "label = \"${2:project label}\"",
+            "aliases = ${3: project aliases in [\"mine\", \"project\"] format}",
+            "examples = \"${4} aliases examples in \"root app, all, q\" format\""
+        ]
+    },
+
+    "New command" : {
+        "prefix": "newcommand",
+        "body": [
+            "[[projects.${1:project name}.commands]]",
+            "key = \"${2:command key, for example \"root\"}\"",
+            "label = \"${3:command label}\"",
+            "aliases = [${4:command aliases in [\"root\", \"rt\"] format}]",
+            "argv = [\"${5: command, for example \"code\"}\", \"${6:arguments, for example \"<project directory\">}\"]"
+        ]
+    },
+}
