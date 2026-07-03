@@ -1,0 +1,228 @@
+# Edit this file to add or remove workspace menus and commands.
+#
+# A command should normally use argv, which avoids shell quoting problems:
+# argv = ["code", "/some/path"]
+#
+# Use shell only when you really need shell features:
+# shell = "docker compose up -d"
+#
+# detach = true opens GUI apps and immediately returns to the menu script.
+
+title = "Workspace Menu"
+
+[defaults]
+detach = true
+sleep_seconds = 0.1
+prompt = "Open which windows?"
+
+[checks.sensomatic_drive]
+type = "systemd_user_mount"
+service = "rclone_drive_sensomatic_drive.service"
+dir = "/home/iotlaptop/Documents/sensomatic_drive"
+timeout_seconds = 60
+poll_seconds = 2
+
+[projects.alqueria_tanqueros]
+label = "Alqueria Tanqueros"
+aliases = ["alqueria", "tanqueros", "milk", "trucks"]
+checks = ["sensomatic_drive"]
+examples = "db sup, draw, all, q"
+
+[[projects.alqueria_tanqueros.commands]]
+key = "root"
+label = "VS Code: root folder"
+aliases = ["root", "rt"]
+argv = ["code", "/home/iotlaptop/Documents/projects/alqueria"]
+
+[[projects.alqueria_tanqueros.commands]]
+key = "drawio"
+label = "Draw.io model"
+aliases = ["drawio", "draw", "diagram", "model"]
+argv = ["drawio", "/home/iotlaptop/Documents/sensomatic_drive/Proyectos/Alquería/Tanqueros/development/db_model.drawio"]
+
+[[projects.alqueria_tanqueros.commands]]
+key = "db"
+label = "VS Code: alqueria/db"
+aliases = ["db", "database"]
+argv = ["code", "/home/iotlaptop/Documents/projects/alqueria/db"]
+
+[[projects.alqueria_tanqueros.commands]]
+key = "superset"
+label = "VS Code: alqueria/superset"
+aliases = ["superset", "app"]
+argv = ["code", "/home/iotlaptop/Documents/projects/alqueria/superset"]
+
+[[projects.alqueria_tanqueros.commands]]
+key = "local-server"
+label = "VS Code: milk_truck_local_server"
+aliases = ["localserver", "server", "milktruck"]
+argv = ["code", "/home/iotlaptop/AndroidStudioProjects/milk_truck_local_server/"]
+
+[projects.base_projects]
+label = "Base Projects"
+aliases = ["base", "repos", "templates"]
+examples = "psql python, all, q"
+
+[[projects.base_projects.commands]]
+key = "psql"
+label = "VS Code: base postgres repository"
+aliases = ["postgres", "postgresdb", "db", "sql"]
+argv = ["code", "/home/iotlaptop/Documents/projects/base_repos/base_db"]
+
+[[projects.base_projects.commands]]
+key = "python"
+label = "VS Code: base python repository"
+aliases = ["python", "py"]
+argv = ["code", "/home/iotlaptop/Documents/projects/base_repos/base_python_app"]
+
+[[projects.base_projects.commands]]
+key = "pytsvel"
+label = "VS Code: base python-svelte repository"
+aliases = ["pytsvel", "pythonsvelte", "pysvelte", "svelte"]
+argv = ["code", "/home/iotlaptop/Documents/projects/base_repos/base_python_svelte_app"]
+
+[projects.maleta_1]
+label = "Maleta IoT 1"
+aliases = ["maleta", "maleta1", "iot"]
+examples = "db sup, model, all, q"
+
+[[projects.maleta_1.commands]]
+key = "root"
+label = "VS Code: root project folder"
+aliases = ["root"]
+argv = ["code", "/home/iotlaptop/Documents/projects/maleta_iot_1"]
+sleep_seconds = 1
+
+[[projects.maleta_1.commands]]
+key = "db"
+label = "VS Code: db folder"
+aliases = ["db"]
+argv = ["code", "/home/iotlaptop/Documents/projects/maleta_iot_1/db"]
+sleep_seconds = 1
+
+[[projects.maleta_1.commands]]
+key = "db_model"
+label = "Drawio: db model"
+aliases = ["drdb", "model", "dbmodel", "db_model"]
+argv = ["drawio", "/home/iotlaptop/Documents/projects/maleta_iot_1/db/.diagrams/db_model.drawio"]
+sleep_seconds = 1
+
+[[projects.maleta_1.commands]]
+key = "superset"
+label = "VS Code: Superset"
+aliases = ["super", "set", "superset"]
+argv = ["code", "/home/iotlaptop/Documents/projects/maleta_iot_1/superset"]
+sleep_seconds = 1
+
+[[projects.maleta_1.commands]]
+key = "app"
+label = "VS Code: App"
+aliases = ["app"]
+argv = ["code", "/home/iotlaptop/Documents/projects/maleta_iot_1/app"]
+sleep_seconds = 1
+
+[projects.iberplast_vibration]
+label = "Iberplast Vibration"
+aliases = ["iberplast", "vibration", "vib"]
+examples = "offer ofk, diagrams, all, q"
+
+[[projects.iberplast_vibration.commands]]
+key = "root"
+label = "VS Code: root project folder"
+aliases = ["root"]
+argv = ["code", "/home/iotlaptop/Documents/projects/iberplast/vibration"]
+
+[[projects.iberplast_vibration.commands]]
+key = "diagrams"
+label = "Drawio: diagrams"
+aliases = ["diagrams", "drawio", "draw", "dr"]
+checks = ["sensomatic_drive"]
+argv = ["drawio", "/home/iotlaptop/Documents/sensomatic_drive/Proyectos/William/IberPlast/monitoreo_vibracion/diagrams.drawio"]
+
+[[projects.iberplast_vibration.commands]]
+key = "offer"
+label = "VS Code: offer"
+aliases = ["offer", "of"]
+argv = ["code", "/home/iotlaptop/Documents/notes/Sensomatic/Proyectos/William/iberplast/vibration/oferta"]
+
+[[projects.iberplast_vibration.commands]]
+key = "offerk"
+label = "Okular: offer"
+aliases = ["pdf", "okular", "offerk", "ofk"]
+argv = ["okular", "/home/iotlaptop/Documents/notes/Sensomatic/Proyectos/William/iberplast/vibration/oferta/main.pdf"]
+
+[projects.upl_production_counting]
+label = "UPL Production Counting"
+aliases = ["upl", "production", "counting"]
+examples = "offer ofk, diagrams, all, q"
+
+[[projects.upl_production_counting.commands]]
+key = "root"
+label = "VS Code: root project folder"
+aliases = ["root"]
+argv = ["code", "/home/iotlaptop/Documents/projects/upl_production_counter"]
+
+[[projects.upl_production_counting.commands]]
+key = "diagrams"
+label = "Drawio: diagrams"
+aliases = ["diagrams", "drawio", "draw", "dr"]
+argv = ["drawio", "/home/iotlaptop/Documents/projects/upl_production_counter/.diagrams/diagrams.drawio"]
+
+[[projects.upl_production_counting.commands]]
+key = "offer"
+label = "VS Code: offer"
+aliases = ["offer", "of"]
+argv = ["code", "/home/iotlaptop/Documents/notes/Sensomatic/Proyectos/William/upl/production_counting/oferta"]
+
+[[projects.upl_production_counting.commands]]
+key = "offerk"
+label = "Okular: offer"
+aliases = ["pdf", "okular", "offerk", "ofk"]
+argv = ["okular", "/home/iotlaptop/Documents/notes/Sensomatic/Proyectos/William/upl/production_counting/oferta/main.pdf"]
+
+[projects.iolink_counter]
+label = "IO-Link Counter"
+aliases = ["iolink", "counter"]
+checks = ["sensomatic_drive"]
+examples = "root app, all, q"
+
+[[projects.iolink_counter.commands]]
+key = "coroot"
+label = "VS Code: root project folder"
+aliases = ["root", "coroot"]
+argv = ["code", "/home/iotlaptop/Documents/projects/iolink_counter"]
+sleep_seconds = 1
+
+[[projects.iolink_counter.commands]]
+key = "coapp"
+label = "VS Code: app project folder"
+aliases = ["app", "coapp"]
+argv = ["code", "/home/iotlaptop/Documents/projects/iolink_counter/app"]
+sleep_seconds = 1
+
+[projects.modbus_reader]
+label = "Modbus Reader"
+aliases = ["modbus", "reader", "rtu"]
+checks = ["sensomatic_drive"]
+examples = "root app db, all, q"
+
+[[projects.modbus_reader.commands]]
+key = "coroot"
+label = "VS Code: root project folder"
+aliases = ["root", "coroot"]
+argv = ["code", "/home/iotlaptop/Documents/projects/modbus_rtu_reader/"]
+sleep_seconds = 1
+
+[[projects.modbus_reader.commands]]
+key = "coapp"
+label = "VS Code: app project folder"
+aliases = ["app", "coapp"]
+argv = ["code", "/home/iotlaptop/Documents/projects/modbus_rtu_reader/modbus_reader"]
+sleep_seconds = 1
+
+[[projects.modbus_reader.commands]]
+key = "codb"
+label = "VS Code: project db"
+aliases = ["db", "database", "codb"]
+argv = ["code", "/home/iotlaptop/Documents/projects/modbus_rtu_reader/db"]
+sleep_seconds = 1

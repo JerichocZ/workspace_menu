@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Workspaces menu
+Comment=Just a CLI menu to order and run commands by projects
+Exec=workspace_menu.sh
+Icon=utilities-terminal
+Terminal=true
+Categories=Development;
