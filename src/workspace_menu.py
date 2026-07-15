@@ -54,6 +54,12 @@ class MenuConfig:
     projects: tuple[Project, ...]
 
 
+@dataclass(frozen=True)
+class ProjectSelection:
+    project: Project | None
+    command_tokens: tuple[str, ...]
+
+
 class ConfigError(ValueError):
     pass
 
@@ -285,7 +291,7 @@ def print_projects(config: MenuConfig) -> None:
     for project in config.projects:
         print(f"  [{project.key:<24}] {project.label}")
     print()
-    print("Type a project key or abbreviation. Use q to quit.")
+    print("Type a project key or abbreviation. You can also type '<project> <command>'. Use q to quit.")
 
 
 def print_commands(project: Project) -> None:
@@ -299,31 +305,6 @@ def print_commands(project: Project) -> None:
     print(f"Type one or more commands using abbreviations. Examples: {project.examples}")
 
 
-def select_project(config: MenuConfig, token: str | None) -> Project | None:
-    project_items = [(project.key, project.label, project.aliases) for project in config.projects]
-
-    if token:
-        if normalize(token) in {"q", "quit", "exit"}:
-            return None
-        resolved_key = resolve_token(token, project_items, "project")
-        return next(project for project in config.projects if project.key == resolved_key)
-
-    print_projects(config)
-    while True:
-        selection = input("Use which project? ").strip()
-        if normalize(selection) in {"q", "quit", "exit"}:
-            return None
-        if not selection:
-            print("Please type a project.")
-            continue
-        try:
-            resolved_key = resolve_token(selection, project_items, "project")
-        except ResolveError as exc:
-            print(exc, file=sys.stderr)
-            continue
-        return next(project for project in config.projects if project.key == resolved_key)
-
-
 def split_command_tokens(tokens: list[str]) -> list[str]:
     split_tokens: list[str] = []
     for token in tokens:
@@ -331,27 +312,80 @@ def split_command_tokens(tokens: list[str]) -> list[str]:
     return split_tokens
 
 
-def select_commands(project: Project, tokens: list[str]) -> list[Command] | None:
+def resolve_project_input(config: MenuConfig, selection: str) -> ProjectSelection:
+    project_items = [(project.key, project.label, project.aliases) for project in config.projects]
+    raw_tokens = split_command_tokens([selection])
+
+    if normalize(selection) in {"q", "quit", "exit"}:
+        return ProjectSelection(project=None, command_tokens=())
+    if not raw_tokens:
+        raise ResolveError("Empty project token")
+
+    first_token_error: ResolveError | None = None
+    for prefix_len in range(len(raw_tokens), 0, -1):
+        project_token = " ".join(raw_tokens[:prefix_len])
+        try:
+            resolved_key = resolve_token(project_token, project_items, "project")
+        except ResolveError as exc:
+            if prefix_len == 1:
+                first_token_error = exc
+            continue
+
+        project = next(project for project in config.projects if project.key == resolved_key)
+        return ProjectSelection(project=project, command_tokens=tuple(raw_tokens[prefix_len:]))
+
+    if first_token_error is not None:
+        raise first_token_error
+    raise ResolveError(f"Unknown project '{selection}'")
+
+
+def resolve_commands(project: Project, raw_tokens: list[str]) -> list[Command] | None:
     command_items = [(command.key, command.label, command.aliases) for command in project.commands]
+    normalized_line = normalize(" ".join(raw_tokens))
+    if normalized_line in {"q", "quit", "exit"}:
+        return None
+    if normalized_line == "all":
+        return list(project.commands)
 
-    def resolve_many(raw_tokens: list[str]) -> list[Command] | None:
-        normalized_line = normalize(" ".join(raw_tokens))
-        if normalized_line in {"q", "quit", "exit"}:
-            return None
-        if normalized_line == "all":
-            return list(project.commands)
+    selected: list[Command] = []
+    seen: set[str] = set()
+    for token in split_command_tokens(raw_tokens):
+        resolved_key = resolve_token(token, command_items, "command")
+        if resolved_key not in seen:
+            selected.append(next(command for command in project.commands if command.key == resolved_key))
+            seen.add(resolved_key)
+    return selected
 
-        selected: list[Command] = []
-        seen: set[str] = set()
-        for token in split_command_tokens(raw_tokens):
-            resolved_key = resolve_token(token, command_items, "command")
-            if resolved_key not in seen:
-                selected.append(next(command for command in project.commands if command.key == resolved_key))
-                seen.add(resolved_key)
-        return selected
 
+def select_project(config: MenuConfig, token: str | None) -> ProjectSelection:
+    project_items = [(project.key, project.label, project.aliases) for project in config.projects]
+
+    if token:
+        if normalize(token) in {"q", "quit", "exit"}:
+            return ProjectSelection(project=None, command_tokens=())
+        resolved_key = resolve_token(token, project_items, "project")
+        project = next(project for project in config.projects if project.key == resolved_key)
+        return ProjectSelection(project=project, command_tokens=())
+
+    print_projects(config)
+    while True:
+        selection = input("Use which project? ").strip()
+        if not selection:
+            print("Please type a project.")
+            continue
+        try:
+            project_selection = resolve_project_input(config, selection)
+            if project_selection.project is not None and project_selection.command_tokens:
+                resolve_commands(project_selection.project, list(project_selection.command_tokens))
+        except ResolveError as exc:
+            print(exc, file=sys.stderr)
+            continue
+        return project_selection
+
+
+def select_commands(project: Project, tokens: list[str]) -> list[Command] | None:
     if tokens:
-        return resolve_many(tokens)
+        return resolve_commands(project, tokens)
 
     print_commands(project)
     while True:
@@ -364,7 +398,7 @@ def select_commands(project: Project, tokens: list[str]) -> list[Command] | None
             print("Please type at least one command.")
             continue
         try:
-            return resolve_many(raw_tokens)
+            return resolve_commands(project, raw_tokens)
         except ResolveError as exc:
             print(exc, file=sys.stderr)
 
@@ -512,10 +546,13 @@ def main(argv: list[str]) -> int:
         project_token = args.tokens[0] if args.tokens else None
         command_tokens = args.tokens[1:] if args.tokens else []
 
-        project = select_project(config, project_token)
+        project_selection = select_project(config, project_token)
+        project = project_selection.project
         if project is None:
             print("No windows opened.")
             return 0
+        if project_selection.command_tokens:
+            command_tokens = list(project_selection.command_tokens)
 
         commands = select_commands(project, command_tokens)
         if commands is None:

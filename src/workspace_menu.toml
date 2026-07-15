@@ -15,12 +15,16 @@ detach = true
 sleep_seconds = 0.1
 prompt = "Open which windows?"
 
+# CHECKS ===========================
+
 [checks.sensomatic_drive]
 type = "systemd_user_mount"
 service = "rclone_drive_sensomatic_drive.service"
 dir = "/home/iotlaptop/Documents/sensomatic_drive"
 timeout_seconds = 60
 poll_seconds = 2
+
+# ALQUERIA =============================
 
 [projects.alqueria_tanqueros]
 label = "Alqueria Tanqueros"
@@ -57,6 +61,7 @@ key = "local-server"
 label = "VS Code: milk_truck_local_server"
 aliases = ["localserver", "server", "milktruck"]
 argv = ["code", "/home/iotlaptop/AndroidStudioProjects/milk_truck_local_server/"]
+
 
 [projects.base_projects]
 label = "Base Projects"
@@ -226,3 +231,64 @@ label = "VS Code: project db"
 aliases = ["db", "database", "codb"]
 argv = ["code", "/home/iotlaptop/Documents/projects/modbus_rtu_reader/db"]
 sleep_seconds = 1
+[projects.demo]
+label = "Full system demo"
+aliases = ["demo"]
+examples = "demo"
+
+[[projects.demo.commands]]
+key = "db"
+label = "VS Code: Database"
+aliases = ["db", "database"]
+argv = ["code", "/home/iotlaptop/Documents/projects/superset_demo/db"]
+
+[[projects.demo.commands]]
+key = "root"
+label = "VS Code: root folder"
+aliases = ["root"]
+argv = ["code", "/home/iotlaptop/Documents/projects/superset_demo"]
+
+[[projects.demo.commands]]
+key = "db_model"
+label = "Drawio: database model"
+aliases = ["model", "db_model"]
+argv = ["drawio", "/home/iotlaptop/Documents/projects/superset_demo/db/.diagrams/vibration_db_model.drawio"]
+[projects.typst]
+label = "Typst Projects"
+aliases = ["typ, typst, documents"]
+examples = "typ, typst, documents"
+[[projects.typst.commands]]
+key = "offers"
+label = "Ofertas"
+aliases = ["offer", "offers"]
+argv = ["code", "/home/iotlaptop/Documents/projects/ia_ofertas"]
+[[projects.typst.commands]]
+key = "offers_dir"
+label = "Directorio de ofertas"
+aliases = ["offersdir", "offersdir"]
+argv = ["nemo", "/home/iotlaptop/Documents/projects/ia_ofertas/building/documents"]
+[[projects.typst.commands]]
+key = "presentations"
+label = "Presentaciones"
+aliases = ["presen", "presentations"]
+argv = ["code", "/home/iotlaptop/Documents/projects/presentaciones"]
+[[projects.typst.commands]]
+key = "presentations_dir"
+label = "Directorio de presentaciones"
+aliases = ["presendir", "presentationsdir"]
+argv = ["nemo", "/home/iotlaptop/Documents/projects/presentaciones/building/documents"]
+[[projects.typst.commands]]
+key = "models"
+label = "Typst environment for diagrams of models"
+aliases = ["models", "model", "diagrams"]
+argv = ["code", "/home/iotlaptop/Documents/projects/typ_models_diagrams"]
+
+[projects.inkscape]
+label = "inkscape"
+aliases = ["ink", "inkscape"]
+examples = "ink, inkscape" 
+[[projects.inkscape.commands]]
+key = "preset_dir"
+label = "Presets directory"
+aliases = ["preset"]
+argv = ["nemo", "/home/iotlaptop/Documents/projects/presentaciones/.tools/inkscape/drawings"]

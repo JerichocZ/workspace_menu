@@ -28,6 +28,13 @@ Interactive mode:
 ./workspace_menu.sh
 ```
 
+From the project prompt, you can also launch commands directly:
+
+```text
+Use which project? typst model
+Use which project? alqueria db superset
+```
+
 List configured projects and commands:
 
 ```bash
